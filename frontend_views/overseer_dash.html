@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link active" href="/dash/overseer">Overseer Panel</a></li>
+{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2>Overseer Panel</h2>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-dark text-white">Create Expedition</div>
+            <div class="card-body">
+                <form method="POST" action="/dash/add_expedition">
+                    <div class="mb-2"><input type="text" name="title" class="form-control" placeholder="Title" required></div>
+                    <div class="mb-2"><input type="text" name="locale" class="form-control" placeholder="Location" required></div>
+                    <div class="mb-2"><input type="text" name="challenge" class="form-control" placeholder="Challenge Level" required></div>
+                    <div class="mb-2"><input type="number" name="max" class="form-control" placeholder="Max Wanderers" required></div>
+                    <div class="mb-2"><label>Launch</label><input type="date" name="launch" class="form-control" required></div>
+                    <div class="mb-2"><label>End</label><input type="date" name="end" class="form-control" required></div>
+                    <div class="mb-2">
+                        <label>Assign Master</label>
+                        <select name="master_id" class="form-select">
+                            <option value="">-- Optional --</option>
+                            {% for m in masters %}
+                                {% if m.is_approved and m.active %}<option value="{{ m.id }}">{{ m.alias }}</option>{% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-dark w-100">Establish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">Personnel</div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead><tr><th>Alias</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u.alias }}</td>
+                            <td>{{ u.role_type }}</td>
+                            <td>
+                                {% if not u.active %}<span class="badge bg-danger">Banned</span>
+                                {% elif u.role_type == 'master' and not u.is_approved %}<span class="badge bg-warning">Pending</span>
+                                {% else %}<span class="badge bg-success">Active</span>{% endif %}
+                            </td>
+                            <td>
+                                {% if u.role_type == 'master' and not u.is_approved and u.active %}
+                                <form method="POST" action="/dash/approve/{{ u.id }}" class="d-inline"><button class="btn btn-sm btn-primary">Approve</button></form>
+                                {% endif %}
+                                {% if u.active %}
+                                <form method="POST" action="/dash/ban/{{ u.id }}" class="d-inline"><button class="btn btn-sm btn-danger">Ban</button></form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">All Expeditions</div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead><tr><th>Title</th><th>Location</th><th>Launch</th><th>End</th><th>Status</th><th>Master</th></tr></thead>
+                    <tbody>
+                        {% for e in expeditions %}
+                        <tr>
+                            <td>{{ e.title }}</td>
+                            <td>{{ e.locale }}</td>
+                            <td>{{ e.launch_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ e.end_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ e.current_phase }}</td>
+                            <td>{{ e.master.alias if e.master else 'None' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

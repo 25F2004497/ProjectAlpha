@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3>Alpha Access</h3>
+            </div>
+            <div class="card-body">
+                {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+                <form method="POST" action="/login">
+                    <div class="mb-3">
+                        <label>Alias</label>
+                        <input type="text" name="alias" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Secret Key</label>
+                        <input type="password" name="secret" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Access</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="/register">Register new Identity</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

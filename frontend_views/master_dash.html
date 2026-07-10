@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link active" href="/dash/master">Master Panel</a></li>
+{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2>My Expeditions</h2>
+    </div>
+</div>
+
+<div class="row mt-4">
+    {% for e in expeditions %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-info">
+            <div class="card-body">
+                <h5 class="card-title text-info">{{ e.title }}</h5>
+                <p><strong>Dates:</strong> {{ e.launch_date.strftime('%Y-%m-%d') }} to {{ e.end_date.strftime('%Y-%m-%d') }}</p>
+                <form method="POST" action="/dash/update_exp/{{ e.eid }}">
+                    <div class="mb-2">
+                        <label>Status</label>
+                        <select name="phase" class="form-select">
+                            <option value="Open" {% if e.current_phase == 'Open' %}selected{% endif %}>Open</option>
+                            <option value="Closed" {% if e.current_phase == 'Closed' %}selected{% endif %}>Closed</option>
+                            <option value="Finished" {% if e.current_phase == 'Finished' %}selected{% endif %}>Finished</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Slots (Max {{ e.max_wanderers }})</label>
+                        <input type="number" name="slots" value="{{ e.current_slots }}" max="{{ e.max_wanderers }}" min="0" class="form-control">
+                    </div>
+                    <button class="btn btn-info w-100 mt-2">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

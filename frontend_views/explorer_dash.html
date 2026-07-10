@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link active" href="/dash/explorer">Explorer Panel</a></li>
+{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-8">
+        <h2>Open Expeditions</h2>
+    </div>
+    <div class="col-md-4">
+        <form method="GET" action="/dash/explorer" class="d-flex">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search locale..." value="{{ q }}">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="row mt-4">
+    {% for e in expeditions %}
+    {% if e.eid not in log_ids and e.current_slots > 0 %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary">{{ e.title }}</h5>
+                <p class="mb-1"><strong>Locale:</strong> {{ e.locale }}</p>
+                <p class="mb-1"><strong>Challenge:</strong> {{ e.challenge }}</p>
+                <p class="mb-1"><strong>Dates:</strong> {{ e.launch_date.strftime('%Y-%m-%d') }} to {{ e.end_date.strftime('%Y-%m-%d') }}</p>
+                <form method="POST" action="/dash/join/{{ e.eid }}">
+                    <button class="btn btn-primary w-100 mt-3">Join</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h2 class="text-success">My Logs</h2>
+        <div class="row mt-3">
+            {% for l in logs %}
+            <div class="col-md-3 mb-3">
+                <div class="card shadow border-success">
+                    <div class="card-body text-center">
+                        <h6 class="text-success">{{ l.expedition.title }}</h6>
+                        <small>{{ l.expedition.launch_date.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

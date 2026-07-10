@@ -1,0 +1,136 @@
+:root {
+    --bg-main: #f4f7f6;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --primary-color: #2c3e50;
+    --btn-hover: #1a252f;
+    --border-color: #cccccc;
+    --card-bg: #ffffff;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+}
+
+.ambient-background {
+    display: none; /* Remove flashy orbs */
+}
+
+.glass-shell {
+    width: 90%;
+    max-width: 1000px;
+    margin: 2rem auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 999;
+}
+.glass-modal {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    width: 100%; max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.glass-modal h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+/* Forms */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    color: var(--text-primary);
+    box-sizing: border-box;
+    font-family: inherit;
+}
+input::placeholder { color: #999; }
+select option { background: #fff; color: var(--text-primary); }
+
+button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: #e0e0e0;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+button:hover { background: #d0d0d0; }
+
+.primary-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+.primary-btn:hover { background: var(--btn-hover); }
+
+/* Tabs */
+.auth-tabs {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 10px;
+}
+.auth-tabs button {
+    flex: 1;
+    background: #f9f9f9;
+}
+.auth-tabs button.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Dashboard Layouts */
+.dash-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+.dash-header h2 { margin: 0 0 5px 0; }
+.dash-header p { margin: 0; color: var(--text-secondary); }
+
+.grid-container {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;
+}
+.glass-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+.glass-card h3 { margin-top: 0; color: var(--primary-color); border-bottom: 1px solid #eee; padding-bottom: 8px;}
+.glass-card p { margin: 8px 0; color: var(--text-secondary); font-size: 0.95rem;}
+
+/* Toasts */
+#toast-container {
+    position: fixed; top: 20px; right: 20px; z-index: 1000;
+}
+.toast {
+    background: #fff; color: var(--text-primary);
+    padding: 1rem 2rem; border-radius: 4px; margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-weight: bold;
+}
