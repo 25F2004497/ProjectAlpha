@@ -4,13 +4,26 @@
 {% endblock %}
 {% block content %}
 <div class="row mt-4">
-    <div class="col-md-8">
+    <div class="col-md-12">
         <h2>Open Expeditions</h2>
     </div>
-    <div class="col-md-4">
-        <form method="GET" action="/dash/explorer" class="d-flex">
-            <input class="form-control me-2" type="search" name="q" placeholder="Search locale..." value="{{ q }}">
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="row mt-3">
+    <div class="col-md-12">
+        <form method="GET" action="/dash/explorer" class="d-flex gap-2">
+            <input class="form-control" type="search" name="q" placeholder="Search by location..." value="{{ q }}">
+            <select name="challenge" class="form-select" style="max-width: 200px;">
+                <option value="">All Difficulties</option>
+                <option value="Easy" {% if challenge == 'Easy' %}selected{% endif %}>Easy</option>
+                <option value="Moderate" {% if challenge == 'Moderate' %}selected{% endif %}>Moderate</option>
+                <option value="Hard" {% if challenge == 'Hard' %}selected{% endif %}>Hard</option>
+            </select>
             <button class="btn btn-outline-primary" type="submit">Search</button>
+            {% if q or challenge %}
+            <a href="/dash/explorer" class="btn btn-outline-secondary">Clear</a>
+            {% endif %}
         </form>
     </div>
 </div>
@@ -24,7 +37,10 @@
                 <h5 class="card-title text-primary">{{ e.title }}</h5>
                 <p class="mb-1"><strong>Locale:</strong> {{ e.locale }}</p>
                 <p class="mb-1"><strong>Challenge:</strong> {{ e.challenge }}</p>
+                {% if e.duration %}<p class="mb-1"><strong>Duration:</strong> {{ e.duration }} days</p>{% endif %}
                 <p class="mb-1"><strong>Dates:</strong> {{ e.launch_date.strftime('%Y-%m-%d') }} to {{ e.end_date.strftime('%Y-%m-%d') }}</p>
+                <p class="mb-1"><strong>Available Slots:</strong> {{ e.current_slots }} / {{ e.max_wanderers }}</p>
+                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">{{ e.current_phase }}</span></p>
                 <form method="POST" action="/dash/join/{{ e.eid }}">
                     <button class="btn btn-primary w-100 mt-3">Join</button>
                 </form>
@@ -35,20 +51,38 @@
     {% endfor %}
 </div>
 
-<div class="row mt-5">
+<!-- My Bookings / Trekking History -->
+<div class="row mt-5 mb-4">
     <div class="col-md-12">
-        <h2 class="text-success">My Logs</h2>
-        <div class="row mt-3">
-            {% for l in logs %}
-            <div class="col-md-3 mb-3">
-                <div class="card shadow border-success">
-                    <div class="card-body text-center">
-                        <h6 class="text-success">{{ l.expedition.title }}</h6>
-                        <small>{{ l.expedition.launch_date.strftime('%Y-%m-%d') }}</small>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        <h2 class="text-success">My Bookings &amp; Trekking History</h2>
+        <div class="table-responsive mt-3">
+            <table class="table table-hover">
+                <thead>
+                    <tr><th>Expedition</th><th>Location</th><th>Dates</th><th>Trek Status</th><th>Booking Status</th><th>Booked On</th></tr>
+                </thead>
+                <tbody>
+                    {% for l in logs %}
+                    <tr>
+                        <td>{{ l.expedition.title }}</td>
+                        <td>{{ l.expedition.locale }}</td>
+                        <td>{{ l.expedition.launch_date.strftime('%Y-%m-%d') }} to {{ l.expedition.end_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if l.expedition.current_phase == 'Finished' %}<span class="badge bg-secondary">{{ l.expedition.current_phase }}</span>
+                            {% elif l.expedition.current_phase == 'Open' %}<span class="badge bg-success">{{ l.expedition.current_phase }}</span>
+                            {% elif l.expedition.current_phase == 'Closed' %}<span class="badge bg-dark">{{ l.expedition.current_phase }}</span>
+                            {% else %}<span class="badge bg-info">{{ l.expedition.current_phase }}</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if l.status == 'Booked' %}<span class="badge bg-primary">{{ l.status }}</span>
+                            {% elif l.status == 'Completed' %}<span class="badge bg-success">{{ l.status }}</span>
+                            {% elif l.status == 'Cancelled' %}<span class="badge bg-danger">{{ l.status }}</span>
+                            {% else %}<span class="badge bg-secondary">{{ l.status }}</span>{% endif %}
+                        </td>
+                        <td>{{ l.recorded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -28,6 +28,7 @@ class ExpeditionBase(db.Model):
     challenge = db.Column(db.String(50), nullable=False)
     max_wanderers = db.Column(db.Integer, nullable=False)
     current_slots = db.Column(db.Integer, nullable=False)
+    duration = db.Column(db.Integer, nullable=True) # Duration in days
     launch_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
     current_phase = db.Column(db.String(50), default='Planning') # Planning, Open, Closed, Finished
@@ -41,6 +42,7 @@ class ExpeditionLog(db.Model):
     wanderer_id = db.Column(db.Integer, db.ForeignKey('wanderers.id', ondelete='CASCADE'))
     expedition_id = db.Column(db.Integer, db.ForeignKey('expeditions.eid', ondelete='CASCADE'))
     recorded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), default='Booked') # Booked, Cancelled, Completed
     
     wanderer = db.relationship('Wanderer', backref=db.backref('logs', cascade='all, delete-orphan'), foreign_keys=[wanderer_id])
     expedition = db.relationship('ExpeditionBase', backref=db.backref('logs', cascade='all, delete-orphan'))

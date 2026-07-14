@@ -1,4 +1,4 @@
-from flask import Flask  # type: ignore[import]
+from flask import Flask
 from database.schema import db, Wanderer
 import os
 

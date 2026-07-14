@@ -9,6 +9,55 @@
     </div>
 </div>
 
+<!-- Summary Stats Cards -->
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <h5>Total Treks</h5>
+                <h2>{{ total_treks }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h5>Total Users</h5>
+                <h2>{{ total_users }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <h5>Total Staff</h5>
+                <h2>{{ total_staff }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark shadow">
+            <div class="card-body text-center">
+                <h5>Total Bookings</h5>
+                <h2>{{ total_bookings }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <form method="GET" action="/dash/overseer" class="d-flex">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search treks, staff, or users by name or ID..." value="{{ search_q }}">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+            {% if search_q %}
+            <a href="/dash/overseer" class="btn btn-outline-secondary ms-2">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
 <div class="row mt-4">
     <div class="col-md-5">
         <div class="card">
@@ -17,8 +66,16 @@
                 <form method="POST" action="/dash/add_expedition">
                     <div class="mb-2"><input type="text" name="title" class="form-control" placeholder="Title" required></div>
                     <div class="mb-2"><input type="text" name="locale" class="form-control" placeholder="Location" required></div>
-                    <div class="mb-2"><input type="text" name="challenge" class="form-control" placeholder="Challenge Level" required></div>
+                    <div class="mb-2">
+                        <select name="challenge" class="form-select" required>
+                            <option value="" disabled selected>Select Difficulty</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
                     <div class="mb-2"><input type="number" name="max" class="form-control" placeholder="Max Wanderers" required></div>
+                    <div class="mb-2"><input type="number" name="duration" class="form-control" placeholder="Duration (days)"></div>
                     <div class="mb-2"><label>Launch</label><input type="date" name="launch" class="form-control" required></div>
                     <div class="mb-2"><label>End</label><input type="date" name="end" class="form-control" required></div>
                     <div class="mb-2">
@@ -41,10 +98,11 @@
             <div class="card-header bg-info text-white">Personnel</div>
             <div class="card-body">
                 <table class="table table-hover">
-                    <thead><tr><th>Alias</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Alias</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody>
                         {% for u in users %}
                         <tr>
+                            <td>{{ u.id }}</td>
                             <td>{{ u.alias }}</td>
                             <td>{{ u.role_type }}</td>
                             <td>
@@ -69,22 +127,65 @@
     </div>
 </div>
 
+<!-- Expeditions Table with Edit/Delete -->
 <div class="row mt-4">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header bg-secondary text-white">All Expeditions</div>
             <div class="card-body">
+                <div class="table-responsive">
                 <table class="table table-striped">
-                    <thead><tr><th>Title</th><th>Location</th><th>Launch</th><th>End</th><th>Status</th><th>Master</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Title</th><th>Location</th><th>Difficulty</th><th>Duration</th><th>Slots</th><th>Launch</th><th>End</th><th>Status</th><th>Master</th><th>Actions</th></tr></thead>
                     <tbody>
                         {% for e in expeditions %}
                         <tr>
+                            <td>{{ e.eid }}</td>
                             <td>{{ e.title }}</td>
                             <td>{{ e.locale }}</td>
+                            <td>{{ e.challenge }}</td>
+                            <td>{{ e.duration if e.duration else '-' }} days</td>
+                            <td>{{ e.current_slots }} / {{ e.max_wanderers }}</td>
                             <td>{{ e.launch_date.strftime('%Y-%m-%d') }}</td>
                             <td>{{ e.end_date.strftime('%Y-%m-%d') }}</td>
                             <td>{{ e.current_phase }}</td>
                             <td>{{ e.master.alias if e.master else 'None' }}</td>
+                            <td>
+                                <a href="/dash/edit_expedition/{{ e.eid }}" class="btn btn-sm btn-warning">Edit</a>
+                                <form method="POST" action="/dash/delete_expedition/{{ e.eid }}" class="d-inline">
+                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this expedition?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Bookings Table -->
+<div class="row mt-4 mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">All Bookings</div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead><tr><th>Log ID</th><th>Explorer</th><th>Expedition</th><th>Booked On</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for l in all_logs %}
+                        <tr>
+                            <td>{{ l.log_id }}</td>
+                            <td>{{ l.wanderer.alias }}</td>
+                            <td>{{ l.expedition.title }}</td>
+                            <td>{{ l.recorded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if l.status == 'Booked' %}<span class="badge bg-primary">{{ l.status }}</span>
+                                {% elif l.status == 'Completed' %}<span class="badge bg-success">{{ l.status }}</span>
+                                {% elif l.status == 'Cancelled' %}<span class="badge bg-danger">{{ l.status }}</span>
+                                {% else %}<span class="badge bg-secondary">{{ l.status }}</span>{% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block nav %}
+<li class="nav-item"><a class="nav-link" href="/dash/overseer">Overseer Panel</a></li>
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Edit Expedition #{{ expedition.eid }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/dash/edit_expedition/{{ expedition.eid }}">
+                    <div class="mb-3">
+                        <label>Title</label>
+                        <input type="text" name="title" class="form-control" value="{{ expedition.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Location</label>
+                        <input type="text" name="locale" class="form-control" value="{{ expedition.locale }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Difficulty</label>
+                        <select name="challenge" class="form-select" required>
+                            <option value="Easy" {% if expedition.challenge == 'Easy' %}selected{% endif %}>Easy</option>
+                            <option value="Moderate" {% if expedition.challenge == 'Moderate' %}selected{% endif %}>Moderate</option>
+                            <option value="Hard" {% if expedition.challenge == 'Hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Max Wanderers</label>
+                        <input type="number" name="max" class="form-control" value="{{ expedition.max_wanderers }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Available Slots</label>
+                        <input type="number" name="current_slots" class="form-control" value="{{ expedition.current_slots }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Duration (days)</label>
+                        <input type="number" name="duration" class="form-control" value="{{ expedition.duration if expedition.duration else '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Launch Date</label>
+                        <input type="date" name="launch" class="form-control" value="{{ expedition.launch_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>End Date</label>
+                        <input type="date" name="end" class="form-control" value="{{ expedition.end_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Status</label>
+                        <select name="phase" class="form-select">
+                            <option value="Planning" {% if expedition.current_phase == 'Planning' %}selected{% endif %}>Planning</option>
+                            <option value="Open" {% if expedition.current_phase == 'Open' %}selected{% endif %}>Open</option>
+                            <option value="Closed" {% if expedition.current_phase == 'Closed' %}selected{% endif %}>Closed</option>
+                            <option value="Finished" {% if expedition.current_phase == 'Finished' %}selected{% endif %}>Finished</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Assign Master</label>
+                        <select name="master_id" class="form-select">
+                            <option value="">-- None --</option>
+                            {% for m in masters %}
+                                {% if m.is_approved and m.active %}
+                                <option value="{{ m.id }}" {% if expedition.master_id == m.id %}selected{% endif %}>{{ m.alias }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-warning flex-fill">Save Changes</button>
+                        <a href="/dash/overseer" class="btn btn-secondary flex-fill">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
